@@ -69,7 +69,7 @@ Check Salak GO API คือ REST API สำหรับเว็บไซต์
    <summary>View Details</summary>
 
    - **Method** : `GET`
-   - **Url** : `http://{URL}:{PORT}/go/getNews/:id`
+   - **Url** : `http://{URL}:{PORT}/go/getNewsById/:id`
    - **Request** :
      - header : `-`
      - body : `-`
