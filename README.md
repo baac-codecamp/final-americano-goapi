@@ -1,4 +1,4 @@
-# Check Salak API
+# Check Salak GO API
 
 Check Salak GO API คือ REST API สำหรับเว็บไซต์ตรวจสลากออมทรัพย์ ธ.ก.ส. โดยใช้ภาษา Golang
 
