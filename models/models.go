@@ -15,3 +15,6 @@ type News struct {
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt,omitempty"`
 	UpdatedAt time.Time          `json:"updatedAt" bson:"updatedAt,omitempty"`
 }
+
+
+

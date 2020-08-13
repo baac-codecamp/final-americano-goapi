@@ -7,12 +7,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/GO-FEED/helper"
-	"github.com/GO-FEED/models"
+	"github.com/app/final-americano-goapi/helper"
+	"github.com/app/final-americano-goapi/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+
+type ResMsg struct {
+	Response_status string  `json:"response_status"`
+	Response_message string   `json:"response_message"`
+	Response_data interface{}  `json:"response_data"`
+}
 
 func getNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -24,7 +32,14 @@ func getNews(w http.ResponseWriter, r *http.Request) {
 	collection := helper.ConnectDB()
 
 	// bson.M{},  we passed empty filter. So we want to get all data.
-	cur, err := collection.Find(context.TODO(), bson.M{})
+	options := options.Find()
+	sort := bson.D{}
+	sort = append(sort, bson.E{"createdAt", -1})
+
+	options.SetSort(sort)
+
+	filter := bson.M{}
+	cur, err := collection.Find(context.TODO(), filter, options)
 
 	if err != nil {
 		helper.GetError(err, w)
@@ -50,11 +65,16 @@ func getNews(w http.ResponseWriter, r *http.Request) {
 		newses = append(newses, news)
 	}
 
+	var Response ResMsg
+	Response.Response_status = "success"
+	Response.Response_message = "Get News Success!"
+	Response.Response_data = newses
+	
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
 	}
-
-	json.NewEncoder(w).Encode(newses) // encode similar to serialize process.
+	
+	json.NewEncoder(w).Encode(Response) // encode similar to serialize process.
 }
 
 func getNewByID(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +99,12 @@ func getNewByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(news)
+	var Response ResMsg
+	Response.Response_status = "success"
+	Response.Response_message = "Get news by id success!"
+	Response.Response_data = news
+
+	json.NewEncoder(w).Encode(Response)
 }
 
 func createNews(w http.ResponseWriter, r *http.Request) {
@@ -106,84 +131,13 @@ func createNews(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
-/* func updateBook(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	var params = mux.Vars(r)
-
-	//Get id from parameters
-	id, _ := primitive.ObjectIDFromHex(params["id"])
-
-	var book models.Book
-
-	collection := helper.ConnectDB()
-
-	// Create filter
-	filter := bson.M{"_id": id}
-
-	// Read update model from body request
-	_ = json.NewDecoder(r.Body).Decode(&book)
-
-	// prepare update model.
-	update := bson.D{
-		{"$set", bson.D{
-			{"isbn", book.Isbn},
-			{"title", book.Title},
-			{"author", bson.D{
-				{"firstname", book.Author.FirstName},
-				{"lastname", book.Author.LastName},
-			}},
-		}},
-	}
-
-	err := collection.FindOneAndUpdate(context.TODO(), filter, update).Decode(&book)
-
-	if err != nil {
-		helper.GetError(err, w)
-		return
-	}
-
-	book.ID = id
-
-	json.NewEncoder(w).Encode(book)
-} */
-
-/* func deleteBook(w http.ResponseWriter, r *http.Request) {
-	// Set header
-	w.Header().Set("Content-Type", "application/json")
-
-	// get params
-	var params = mux.Vars(r)
-
-	// string to primitve.ObjectID
-	id, err := primitive.ObjectIDFromHex(params["id"])
-
-	collection := helper.ConnectDB()
-
-	// prepare filter.
-	filter := bson.M{"_id": id}
-
-	deleteResult, err := collection.DeleteOne(context.TODO(), filter)
-
-	if err != nil {
-		helper.GetError(err, w)
-		return
-	}
-
-	json.NewEncoder(w).Encode(deleteResult)
-} */
-
-// var client *mongo.Client
-
 func main() {
-	//Init Router
+
 	r := mux.NewRouter()
-	r.HandleFunc("/api/news", getNews).Methods("GET")
-	r.HandleFunc("/api/news", createNews).Methods("POST")
-	r.HandleFunc("/api/news/{id}", getNewByID).Methods("GET")
-	/* r.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
-	r.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE") */
+	r.HandleFunc("/go/getNews", getNews).Methods("GET")
+	r.HandleFunc("/go/getNewsById/{id}", getNewByID).Methods("GET")
+	//r.HandleFunc("/admin/addNews", createNews).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8000", r))
-
+	
 }
