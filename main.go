@@ -24,6 +24,7 @@ type ResMsg struct {
 
 func getNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// we created Book array
 	var newses []models.News
@@ -80,6 +81,7 @@ func getNews(w http.ResponseWriter, r *http.Request) {
 func getNewByID(w http.ResponseWriter, r *http.Request) {
 	// set header.
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var news models.News
 	// we get params with mux.
@@ -109,6 +111,7 @@ func getNewByID(w http.ResponseWriter, r *http.Request) {
 
 func createNews(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	var news models.News
 
