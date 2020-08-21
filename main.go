@@ -15,17 +15,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 type ResMsg struct {
-	Response_status string  `json:"response_status"`
-	Response_message string   `json:"response_message"`
-	Response_data interface{}  `json:"response_data"`
+	Response_status  string      `json:"response_status"`
+	Response_message string      `json:"response_message"`
+	Response_data    interface{} `json:"response_data"`
 }
 
-func getNews(w http.ResponseWriter, r *http.Request) {
+func getNewsHeader() {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+}
+func getNews(w http.ResponseWriter, r *http.Request) {
 
+	getNewsHeader()
 	// we created Book array
 	var newses []models.News
 
@@ -70,11 +72,11 @@ func getNews(w http.ResponseWriter, r *http.Request) {
 	Response.Response_status = "success"
 	Response.Response_message = "Get News Success!"
 	Response.Response_data = newses
-	
+
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
 	}
-	
+
 	json.NewEncoder(w).Encode(Response) // encode similar to serialize process.
 }
 
@@ -142,5 +144,5 @@ func main() {
 	//r.HandleFunc("/admin/addNews", createNews).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8000", r))
-	
+
 }
