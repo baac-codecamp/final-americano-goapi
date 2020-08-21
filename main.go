@@ -21,13 +21,12 @@ type ResMsg struct {
 	Response_data    interface{} `json:"response_data"`
 }
 
-func getNewsHeader() {
+func getNewsHeader(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 }
 func getNews(w http.ResponseWriter, r *http.Request) {
-
-	getNewsHeader()
+	getNewsHeader(w)
 	// we created Book array
 	var newses []models.News
 
