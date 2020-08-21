@@ -21,12 +21,14 @@ type ResMsg struct {
 	Response_data    interface{} `json:"response_data"`
 }
 
-func getNewsHeader(w http.ResponseWriter) {
+func getNewsHeader(w http.ResponseWriter) http.ResponseWriter {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	return w
 }
 func getNews(w http.ResponseWriter, r *http.Request) {
-	getNewsHeader(w)
+
+	w = getNewsHeader(w)
 	// we created Book array
 	var newses []models.News
 
@@ -78,12 +80,15 @@ func getNews(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(Response) // encode similar to serialize process.
 }
-
-func getNewByID(w http.ResponseWriter, r *http.Request) {
-	// set header.
+func getNewByIDHeader(w http.ResponseWriter) http.ResponseWriter {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
+	return w
+}
+func getNewByID(w http.ResponseWriter, r *http.Request) {
+	// set header.
+	//5f3e757a2b8ee35c04f2d43f
+	w = getNewByIDHeader(w)
 	var news models.News
 	// we get params with mux.
 	var params = mux.Vars(r)
